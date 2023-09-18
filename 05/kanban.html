@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kanban</title>
+    <link rel="stylesheet" href="kanban.css">
+</head>
+<body>
+    <header>
+        <h1>Kanban Board</h1>
+        <a href="#">Logout</a>
+    </header>
+    
+    <main>
+        <section class="board">
+            <!-- Form to Add New Task -->
+            <div class="add-task">
+                <h2>Add New Task</h2>
+                <form id="task-form">
+                    <label for="task-description">Task Description:</label>
+                    <input type="text" id="task-description" name="task-description" required>
+                    <button type="submit">Add Task</button>
+                </form>
+            </div>
+            
+            <!-- Kanban Board Columns -->
+            <div class="column">
+                <h2>To Do</h2>
+                <ul class="task-list" id="todo-list">
+                    <!-- Tasks will be dynamically added here -->
+                </ul>
+            </div>
+
+            <div class="column">
+                <h2>In Progress</h2>
+                <ul class="task-list" id="in-progress-list">
+                    <!-- Tasks in progress will be dynamically added here -->
+                </ul>
+            </div>
+
+            <div class="column">
+                <h2>Review</h2>
+                <ul class="task-list" id="review-list">
+                    <!-- Tasks in review will be dynamically added here -->
+                </ul>
+            </div>
+
+            <div class="column">
+                <h2>Testing</h2>
+                <ul class="task-list" id="testing-list">
+                    <!-- Tasks in testing will be dynamically added here -->
+                </ul>
+            </div>
+
+            <div class="column">
+                <h2>Done</h2>
+                <ul class="task-list" id="done-list">
+                    <!-- Completed tasks will be dynamically added here -->
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© Djordje Ristic | 2023</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const taskForm = document.getElementById('task-form');
+            const todoList = document.getElementById('todo-list');
+            const inProgressList = document.getElementById('in-progress-list');
+            const reviewList = document.getElementById('review-list');
+            const testingList = document.getElementById('testing-list');
+            const doneList = document.getElementById('done-list');
+
+            taskForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const taskDescription = document.getElementById('task-description').value;
+
+                if (taskDescription) {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = taskDescription;
+                    todoList.appendChild(listItem);
+
+                    document.getElementById('task-description').value = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
