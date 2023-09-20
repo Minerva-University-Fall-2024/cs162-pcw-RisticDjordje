@@ -54,7 +54,7 @@ def get_random_cat_image():
 def get_cat_breeds():
     url = f"{CAT_BASE_URL}breeds"
     response = requests.get(url)
-    print(f"Status Code: {response.status_code}")
+    print(f"Status Code: {response.status_code}") 
     print(f"Cat Breeds Data: {response.text}")
 
 # Main program
