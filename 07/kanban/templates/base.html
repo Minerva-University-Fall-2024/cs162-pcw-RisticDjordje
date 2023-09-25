@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kanban</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='kanban.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Kanban Board</h1>
+        <a href="#">Logout</a>
+    </header>
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>© Djordje Ristic | 2023</p>
+    </footer>
+</body>
+</html>
