@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Kanban</title>
+    <link rel="stylesheet" href="/static/kanban.css">
+</head>
+
+<body>
+    <header>
+        <h1>Kanban Board</h1>
+        <a href="#">Logout</a>
+    </header>
+
+    <main>
+        <section class="board">
+            <!-- Form to Add New Task -->
+            <div class="add-task">
+                <h2>Add New Task</h2>
+                <form method="POST" action="{{ url_for('main.add_task') }}">
+                    <label for="task-name">Task Name:</label>
+                    <input type="text" id="task-name" name="task-name" required>
+                    <label for="task-description">Task Description:</label>
+                    <input type="text" id="task-description" name="task-description">
+                    <label for="task-column">Task Column:</label>
+                    <select id="task-column" name="task-column">
+                        <option value="To Do">To Do</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Review">Review</option>
+                        <option value="Testing">Testing</option>
+                        <option value="Done">Done</option>
+                    </select>
+                    <button type="submit">Add Task</button>
+                </form>
+            </div>
+
+            <!-- Kanban Board Columns -->
+            {% for column in columns %}
+            <div class="column">
+                <h2>{{ column }}</h2>
+                <ul class="task-list" id="{{ column|lower }}-list">
+                    <!-- Tasks in {{ column }} will be dynamically added here -->
+                    {% for task in tasks[column] %}
+                    <li>{{ task.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+
+    </main>
+
+    <footer>
+        <p>© Djordje Ristic | 2023</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const taskItems = document.querySelectorAll('.task-list li');
+
+            taskItems.forEach((item) => {
+                item.draggable = true;
+
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', e.target.id);
+                });
+
+                item.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+
+                item.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const data = e.dataTransfer.getData('text/plain');
+                    const sourceElement = document.getElementById(data);
+                    const newStatus = e.target.closest('.task-list').id; // Extract the new column name
+
+                    // Move the card to the new task list in the UI
+                    if (e.target.classList.contains('task-list')) {
+                        e.target.appendChild(sourceElement);
+                    }
+
+                    // Send an AJAX request to update the card's status in the database
+                    updateCardStatus(data, newStatus);
+                });
+            });
+
+            function updateCardStatus(cardId, newStatus) {
+                const formData = new FormData();
+                formData.append('card_id', cardId);
+                formData.append('new_status', newStatus);
+
+                fetch('/move-card', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(), // Add CSRF token header if needed
+                    },
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            console.error('Error updating card status:', response.statusText);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error updating card status:', error);
+                    });
+            }
+
+            // Function to get CSRF token if your app uses CSRF protection
+            function getCSRFToken() {
+                const tokenInput = document.querySelector('input[name="csrf_token"]');
+                if (tokenInput) {
+                    return tokenInput.value;
+                } else {
+                    return '';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
