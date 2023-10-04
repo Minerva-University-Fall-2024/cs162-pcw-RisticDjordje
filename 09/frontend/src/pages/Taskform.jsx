@@ -1,22 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
+import{ useEffect, useState } from "react";
+import  addCard  from "../components/Board";
+
 
 export default function Taskform() {
+    const [tasks, setTasks] = useState([]);
     const [taskName, setTaskName] = useState("");
     const [taskDescription, setTaskDescription] = useState("");
     const [taskCategory, setTaskCategory] = useState("Backlog");
 
     function handleSubmit(e) {
         e.preventDefault();
-
+    
         // Create a JSON object with the form data
         const formData = {
             task_name: taskName,
             task_description: taskDescription,
             task_category: taskCategory
         };
-
-        // Send an HTTP POST request to your Flask server's "add_task" endpoint
-        fetch('http://127.0.0.1:5000/add_task', {
+    
+        // Send an HTTP POST request to your Flask server
+        fetch('http://127.0.0.1:5000/form', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json' // Set the content type to JSON
@@ -25,19 +29,18 @@ export default function Taskform() {
         })
         .then(response => {
             if (response.ok) {
-                console.log("Task added successfully");
+                console.log("ok")
                 // Successfully submitted the form
                 // You can redirect or perform any other actions here
             } else {
                 // Handle errors if any
-                console.error('Error:', response.statusText);
             }
         })
         .catch(error => {
             console.error('Error:', error);
         });
     }
-
+    
     return (
         <div className="add-task">
           <form onSubmit={handleSubmit} id="task-form">
@@ -52,7 +55,7 @@ export default function Taskform() {
                   required
                 />
               </div>
-
+      
               <div className="field">
                 <label htmlFor="task-description">Task Description:</label>
                 <input
@@ -64,7 +67,7 @@ export default function Taskform() {
                   required
                 />
               </div>
-
+      
               <div className="field">
                 <label htmlFor="task-category">Task Category:</label>
                 <select
@@ -81,7 +84,7 @@ export default function Taskform() {
                   <option value="Done">Done</option>
                 </select>
               </div>
-
+      
               <div className="field">
                 <button className="submit" type="submit">
                   Add
@@ -91,4 +94,4 @@ export default function Taskform() {
           </form>
         </div>
       );
-}
+    }

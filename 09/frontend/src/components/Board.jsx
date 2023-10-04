@@ -12,6 +12,8 @@ export default function Board() {
             .then(response => response.json())
             .then(data => {
                 if (data.tasks) {
+                    // log to console
+                    console.log(data.tasks);
                     setTasks(data.tasks);
                 }
             })

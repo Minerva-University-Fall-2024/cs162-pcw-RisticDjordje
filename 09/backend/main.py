@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, jsonif
 from flask_login import login_required, current_user
 from . import db
 from .models import User
-
+    
 
 
 main = Blueprint('main', __name__)
@@ -29,11 +29,11 @@ def add_task():
 
     print(data)
     
-
     if task_name and task_column:
         new_task = User(name=task_name, description=task_description, column=task_column)
         db.session.add(new_task)
         db.session.commit()
+
     
     return redirect(url_for('main.index'))
 
@@ -55,6 +55,7 @@ def move_card():
 def get_tasks():
     # Retrieve tasks from the database, for example, all tasks
     tasks = User.query.all()
+    print(tasks)
 
     # Convert the tasks to a list of dictionaries
     task_list = []
@@ -63,9 +64,10 @@ def get_tasks():
             'id': task.id,
             'name': task.name,
             'description': task.description,
-            'column': task.column  # Adjust this attribute based on your model
+            'column': task.column 
         }
         task_list.append(task_data)
 
+    print("Sending tasks", task_list)
     # Return the task data as JSON response
     return jsonify({'tasks': task_list})
