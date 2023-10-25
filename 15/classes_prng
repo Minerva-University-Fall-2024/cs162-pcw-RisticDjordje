@@ -1,0 +1,159 @@
+import numpy as np
+
+
+class Card:
+    def __init__(self, suit, value):
+        self.suit = suit
+        self.value = value
+
+    def __repr__(self):
+        return f"{self.value} of {self.suit}"
+
+    def get_value(self):
+        if self.value in ["Jack", "Queen", "King"]:
+            return 10
+        elif self.value == "Ace":
+            return 1
+        else:
+            return int(self.value)
+
+
+class Deck:
+    def __init__(self, prng="mt"):
+        self.cards = []
+        self.prng = prng
+        if self.prng == "mt":
+            self.generator = np.random.default_rng()  # Mersenne Twister
+        elif self.prng == "lcg":
+            self.generator = np.random.Generator(
+                np.random.PCG64()
+            )  # Linear Congruential Generator
+        else:
+            raise ValueError("Invalid PRNG specified.")
+        self.build()
+
+    def build(self):
+        for suit in ["Hearts", "Diamonds", "Clubs", "Spades"]:
+            for value in [
+                "Ace",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "Jack",
+                "Queen",
+                "King",
+            ]:
+                self.cards.append(Card(suit, value))
+
+    def shuffle(self):
+        if len(self.cards) < 10:  # Reshuffle if deck is running low
+            self.build()
+        else:
+            self.generator.shuffle(self.cards)
+
+    def deal(self):
+        return self.cards.pop()
+
+
+class Hand:
+    def __init__(self):
+        self.cards = []
+        self.value = 0
+
+    def add_card(self, card):
+        self.cards.append(card)
+        self.value += card.get_value()
+        self.adjust_for_ace()
+
+    def adjust_for_ace(self):
+        aces = sum(1 for card in self.cards if card.value == "Ace")
+        while self.value > 21 and aces:
+            self.value -= 10
+            aces -= 1
+
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.hand = Hand()
+
+    def hit(self, deck):
+        self.hand.add_card(deck.deal())
+
+    def show_hand(self):
+        print(f"{self.name}'s hand: {[str(card) for card in self.hand.cards]}")
+
+
+class Dealer(Player):
+    def __init__(self):
+        super().__init__("Dealer")
+
+    def show_hand(self, reveal=False):
+        if reveal:
+            super().show_hand()
+        else:
+            print(f"{self.name}'s hand: [{str(self.hand.cards[0])}, <card hidden>]")
+
+
+def play_game():
+    prng_choice = input(
+        "Choose a PRNG (mt for Mersenne Twister/lcg for Linear Congruential Generator): "
+    ).lower()
+    if prng_choice not in ["mt", "lcg"]:
+        print("Invalid choice. Using default 'mt' PRNG.")
+        prng_choice = "mt"
+
+    deck = Deck(prng=prng_choice)
+    deck.shuffle()
+
+    player = Player(input("Enter your name: "))
+    dealer = Dealer()
+
+    player.hit(deck)
+    dealer.hit(deck)
+    player.hit(deck)
+    dealer.hit(deck)
+
+    dealer.show_hand()
+    player.show_hand()
+
+    while True:
+        choice = input("Do you want to hit or stand? ").lower()
+        if choice == "hit":
+            player.hit(deck)
+            player.show_hand()
+            if player.hand.value > 21:
+                print("You bust! Dealer wins.")
+                return
+        elif choice == "stand":
+            break
+        else:
+            print("Invalid choice. Please choose 'hit' or 'stand'.")
+            continue
+
+    while dealer.hand.value < 17:
+        dealer.hit(deck)
+
+    dealer.show_hand(reveal=True)
+
+    if dealer.hand.value > 21:
+        print("Dealer busts! You win.")
+    elif dealer.hand.value > player.hand.value:
+        print("Dealer wins.")
+    elif dealer.hand.value < player.hand.value:
+        print("You win!")
+    else:
+        print("It's a tie!")
+
+
+while True:
+    play_game()
+    again = input("Do you want to play again? (yes/no) ").lower()
+    if again != "yes":
+        break
