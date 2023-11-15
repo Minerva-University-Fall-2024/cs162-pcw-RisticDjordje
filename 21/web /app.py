@@ -1,15 +1,19 @@
-# This simple app performs simple calculations and stores the results in an
-# sqlite3 database.  When someone visits the home page they can see the 10 most
-# recent calculations.
-
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from parse import Parser
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+# Example of using an environment variable (update as needed)
+database_uri = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///')  # Default to SQLite if not specified
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -43,4 +47,7 @@ def add():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5162)
+    # Fetch host and port from environment variables
+    host = os.getenv('FLASK_RUN_HOST', '0.0.0.0')
+    port = os.getenv('FLASK_RUN_PORT', 5162)
+    app.run(host=host, port=int(port))
