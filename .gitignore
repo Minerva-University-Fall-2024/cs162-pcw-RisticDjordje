@@ -132,3 +132,15 @@ dmypy.json
 # Mac system file:
 .DS_Store
 09/microblog-api/
+23/myenv/bin/activate
+23/myenv/bin/activate.csh
+23/myenv/bin/activate.fish
+23/myenv/bin/Activate.ps1
+23/myenv/bin/flask
+23/myenv/bin/pip
+23/myenv/bin/pip3
+23/myenv/bin/pip3.9
+23/myenv/bin/python
+23/myenv/bin/python3
+23/myenv/bin/python3.9
+23/myenv/pyvenv.cfg
