@@ -25,6 +25,11 @@ jobs:
         pip install -r requirements.txt
       working-directory: '23'
 
+    # Set PYTHONPATH
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+      working-directory: '23'
+
     - name: Run Tests
       run: |
         python -m unittest discover
